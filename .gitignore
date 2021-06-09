@@ -2,3 +2,4 @@
 *.zip
 info.txt
 output/*
+src/feedback-config.json
