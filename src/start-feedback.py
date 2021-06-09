@@ -526,6 +526,13 @@ class BoundingBoxScheduler:
             LabelCategoryConfigS3Uri=labelsUri,
             HumanTaskConfig={
                 'WorkteamArn': workTeamArn,
+                "PublicWorkforceTaskPrice": {
+                    "AmountInUsd": {
+                        "Dollars": 0,
+                        "TenthFractionsOfACent": 6,
+                        "Cents": 3
+                    }
+                },
                  'UiConfig': {
                     'UiTemplateS3Uri': templateUri
                  },
@@ -709,6 +716,13 @@ class LabelVerificationScheduler:
             RoleArn=roleArn,
             HumanTaskConfig={
                 'WorkteamArn': workTeamArn,
+                "PublicWorkforceTaskPrice": {
+                    "AmountInUsd": {
+                        "Dollars": 0,
+                        "TenthFractionsOfACent": 6,
+                        "Cents": 3
+                    }
+                },
                 'UiConfig': {
                     'UiTemplateS3Uri': templateUri
                 },
