@@ -1,0 +1,69 @@
+Description: "Amazon Rekognition Custom Labels Feedback"
+Resources:
+  GroundTruthJobRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Sid: ""
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "sagemaker.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        - "arn:aws:iam::aws:policy/AWSLambda_FullAccess"
+        - "arn:aws:iam::aws:policy/AmazonSageMakerFullAccess"
+  LambdaRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonRekognitionFullAccess'
+        - 'arn:aws:iam::aws:policy/CloudWatchFullAccess'
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Sid: ''
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+  GTLabelVerificationPreLambda:
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      Handler: "label-verification-pre.lambda_handler"
+      Role:
+        !GetAtt LambdaRole.Arn 
+      Code: 
+        S3Bucket: "aws-workshops-eu-west-1"
+        S3Key: "rekognition-feedback/label-verification-pre-lambda.zip"
+      Runtime: "python3.7"
+      Timeout: 25
+  GTLabelVerificationPostLambda:
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      Handler: "label-verification-post.lambda_handler"
+      Role:
+        !GetAtt LambdaRole.Arn 
+      Code: 
+        S3Bucket: "aws-workshops-eu-west-1"
+        S3Key: "rekognition-feedback/label-verification-post-lambda.zip"
+      Runtime: "python3.7"
+      Timeout: 25
+Outputs:
+  jobRoleArn:
+    Description: IAM Role for Ground Truth Jobs
+    Value: !GetAtt GroundTruthJobRole.Arn
+  preLambdaArn:
+    Description: Ground Truth label verification pre lambda
+    Value: !GetAtt GTLabelVerificationPreLambda.Arn
+  postLambdaArn:
+    Description: Ground Truth label verification post lambda
+    Value: !GetAtt GTLabelVerificationPostLambda.Arn
